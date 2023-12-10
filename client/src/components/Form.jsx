@@ -88,7 +88,10 @@ const Form = () => {
   };
 
   return (
-    <form onSubmit={handleSubmit} className="max-w-sm mx-auto mt-8">
+    <form
+      onSubmit={handleSubmit}
+      className="max-w-xs md:max-w-sm mx-auto mt-8 "
+    >
       <div className="mb-4">
         <label
           className="block text-gray-700 text-sm font-bold mb-2"
@@ -154,9 +157,21 @@ const Form = () => {
 
       <div className="flex items-center justify-between">
         <button
-          disabled={loading}
+          disabled={
+            loading ||
+            formData.username.trim() === "" ||
+            formData.email.trim() === "" ||
+            formData.password.trim() === ""
+          }
           type="submit"
-          className=" w-full bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
+          className={`w-full ${
+            loading ||
+            formData.username.trim() === "" ||
+            formData.email.trim() === "" ||
+            formData.password.trim() === ""
+              ? "bg-blue-500 cursor-not-allowed"
+              : "bg-blue-500 hover:bg-blue-700"
+          } text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline`}
         >
           {loading ? "Loading..." : "Sign Up"}
         </button>
