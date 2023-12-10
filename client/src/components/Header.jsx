@@ -6,50 +6,24 @@ const Header = () => {
     <div className="bg-blue-500 p-4">
       <div className="container mx-auto flex justify-between items-center">
         <div className="text-white text-lg font-bold">
-          <NavLink
-            to="/"
-            exact
-            className="text-white hover:text-gray-300"
-            activeClassName="font-bold"
-          >
+          <NavLink to="/" className="text-white hover:text-gray-300">
             Auth App
           </NavLink>
         </div>
         <nav className="space-x-4">
-          <NavLink
-            to="/"
-            exact
-            className="text-white hover:text-gray-300"
-            activeClassName="font-bold"
-          >
+          <NavLink to="/" className="text-white hover:text-gray-300">
             Home
           </NavLink>
-          <NavLink
-            to="/about"
-            className="text-white hover:text-gray-300"
-            activeClassName="font-bold"
-          >
+          <NavLink to="/about" className="text-white hover:text-gray-300">
             About
           </NavLink>
-          <NavLink
-            to="/profile"
-            className="text-white hover:text-gray-300"
-            activeClassName="font-bold"
-          >
+          <NavLink to="/profile" className="text-white hover:text-gray-300">
             Profile
           </NavLink>
-          <NavLink
-            to="/sign-in"
-            className="text-white hover:text-gray-300"
-            activeClassName="font-bold"
-          >
+          <NavLink to="/sign-in" className="text-white hover:text-gray-300">
             Login
           </NavLink>
-          <NavLink
-            to="/sign-up"
-            className="text-white hover:text-gray-300"
-            activeClassName="font-bold"
-          >
+          <NavLink to="/sign-up" className="text-white hover:text-gray-300">
             Register
           </NavLink>
         </nav>
