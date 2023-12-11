@@ -1,8 +1,16 @@
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { SIGN_IN } from "../constants";
+import { useSelector, useDispatch } from "react-redux";
+import {
+  loginStart,
+  loginSuccess,
+  loginFailure,
+} from "../redux/user/userSlice.js";
 
 const Form = ({ type }) => {
+  const dispatch = useDispatch();
+
   const [formData, setFormData] = useState({
     username: "",
     email: "",
@@ -54,8 +62,8 @@ const Form = ({ type }) => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      setLoading(true);
       if (type !== SIGN_IN) {
+        setLoading(true);
         // signup request
         if (validateForm()) {
           // Handle form submission logic here
@@ -69,9 +77,7 @@ const Form = ({ type }) => {
           });
           const data = await response.json();
           console.log(data, "formData from the server");
-          setLoading(false);
-          setIsError(false);
-          // Reset the form and errors after successful submission
+
           setFormData({
             username: "",
             email: "",
@@ -82,28 +88,34 @@ const Form = ({ type }) => {
             email: "",
             password: "",
           });
+          setLoading(false);
+          setIsError(false);
           navigate("/sign-in");
         }
       } else {
-        // sign in request
-        const response = await fetch("/api/auth/signin", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(formData),
-        });
-        const data = await response.json();
-        console.log(data, "formData from the server");
-        setLoading(false);
-        setIsError(false);
-        // Reset the form and errors after successful submission
-        setFormData({
-          username: "",
-          email: "",
-          password: "",
-        });
-        navigate("/");
+        try {
+          dispatch(loginStart());
+          const response = await fetch("/api/auth/signin", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify(formData),
+          });
+          setFormData({
+            username: "",
+            email: "",
+            password: "",
+          });
+          const data = await response.json();
+          dispatch(loginSuccess(data));
+          navigate("/");
+        } catch (err) {
+          dispatch(loginFailure());
+          console.log(err);
+          setLoading(false);
+          setIsError(true);
+        }
       }
     } catch (err) {
       console.log(err);
