@@ -1,7 +1,8 @@
 import React, { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import { SIGN_IN } from "../constants";
 
-const Form = () => {
+const Form = ({ type }) => {
   const [formData, setFormData] = useState({
     username: "",
     email: "",
@@ -16,6 +17,7 @@ const Form = () => {
 
   const [loading, setLoading] = useState(false);
   const [isError, setIsError] = useState(false);
+  const navigate = useNavigate();
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -53,10 +55,38 @@ const Form = () => {
     e.preventDefault();
     try {
       setLoading(true);
-      if (validateForm()) {
-        // Handle form submission logic here
-        console.log("Form data submitted:", formData);
-        const response = await fetch("/api/auth/signup", {
+      if (type !== SIGN_IN) {
+        // signup request
+        if (validateForm()) {
+          // Handle form submission logic here
+          console.log("Form data submitted:", formData);
+          const response = await fetch("/api/auth/signup", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify(formData),
+          });
+          const data = await response.json();
+          console.log(data, "formData from the server");
+          setLoading(false);
+          setIsError(false);
+          // Reset the form and errors after successful submission
+          setFormData({
+            username: "",
+            email: "",
+            password: "",
+          });
+          setErrors({
+            username: "",
+            email: "",
+            password: "",
+          });
+          navigate("/sign-in");
+        }
+      } else {
+        // sign in request
+        const response = await fetch("/api/auth/signin", {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
@@ -73,11 +103,7 @@ const Form = () => {
           email: "",
           password: "",
         });
-        setErrors({
-          username: "",
-          email: "",
-          password: "",
-        });
+        navigate("/");
       }
     } catch (err) {
       console.log(err);
@@ -92,26 +118,28 @@ const Form = () => {
       onSubmit={handleSubmit}
       className="max-w-xs md:max-w-sm mx-auto mt-8 "
     >
-      <div className="mb-4">
-        <label
-          className="block text-gray-700 text-sm font-bold mb-2"
-          htmlFor="username"
-        >
-          Username
-        </label>
-        <input
-          type="text"
-          id="username"
-          name="username"
-          value={formData.username}
-          onChange={handleChange}
-          className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-          placeholder="Enter your username"
-        />
-        {errors.username && (
-          <p className="text-red-500 text-xs mt-1">{errors.username}</p>
-        )}
-      </div>
+      {type !== SIGN_IN && (
+        <div className="mb-4">
+          <label
+            className="block text-gray-700 text-sm font-bold mb-2"
+            htmlFor="username"
+          >
+            Username
+          </label>
+          <input
+            type="text"
+            id="username"
+            name="username"
+            value={formData.username}
+            onChange={handleChange}
+            className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+            placeholder="Enter your username"
+          />
+          {errors.username && (
+            <p className="text-red-500 text-xs mt-1">{errors.username}</p>
+          )}
+        </div>
+      )}
 
       <div className="mb-4">
         <label
@@ -156,25 +184,45 @@ const Form = () => {
       </div>
 
       <div className="flex items-center justify-between">
-        <button
-          disabled={
-            loading ||
-            formData.username.trim() === "" ||
-            formData.email.trim() === "" ||
-            formData.password.trim() === ""
-          }
-          type="submit"
-          className={`w-full ${
-            loading ||
-            formData.username.trim() === "" ||
-            formData.email.trim() === "" ||
-            formData.password.trim() === ""
-              ? "bg-blue-500 cursor-not-allowed"
-              : "bg-blue-500 hover:bg-blue-700"
-          } text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline`}
-        >
-          {loading ? "Loading..." : "Sign Up"}
-        </button>
+        {type !== SIGN_IN ? (
+          <button
+            disabled={
+              loading ||
+              formData.username.trim() === "" ||
+              formData.email.trim() === "" ||
+              formData.password.trim() === ""
+            }
+            type="submit"
+            className={`w-full ${
+              loading ||
+              formData.username.trim() === "" ||
+              formData.email.trim() === "" ||
+              formData.password.trim() === ""
+                ? "bg-blue-500 cursor-not-allowed"
+                : "bg-blue-500 hover:bg-blue-700"
+            } text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline`}
+          >
+            {loading ? "Loading..." : "Sign Up"}
+          </button>
+        ) : (
+          <button
+            disabled={
+              loading ||
+              formData.email.trim() === "" ||
+              formData.password.trim() === ""
+            }
+            type="submit"
+            className={`w-full  ${
+              loading ||
+              formData.email.trim() === "" ||
+              formData.password.trim() === ""
+                ? "bg-blue-500 cursor-not-allowed"
+                : "bg-blue-500 hover:bg-blue-700"
+            } text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline`}
+          >
+            {loading ? "Loading..." : "Sign In"}
+          </button>
+        )}
       </div>
 
       <div className="flex items-center justify-between mt-4">
@@ -187,10 +235,19 @@ const Form = () => {
       </div>
       <div className="mt-4">
         <p className="text-center text-sm text-gray-600">
-          Already have an account?{" "}
-          <Link to="/sign-in" className="text-blue-500 hover:underline">
-            Sign In
-          </Link>
+          {type !== SIGN_IN
+            ? "Already have an account?"
+            : "Don't have an account?"}
+
+          {type !== SIGN_IN ? (
+            <Link to="/sign-in" className="text-blue-500 hover:underline">
+              Sign In
+            </Link>
+          ) : (
+            <Link to="/sign-up" className="text-blue-500 hover:underline">
+              Sign Up
+            </Link>
+          )}
         </p>
       </div>
     </form>
