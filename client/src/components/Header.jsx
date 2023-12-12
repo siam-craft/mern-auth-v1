@@ -4,7 +4,6 @@ import { useSelector } from "react-redux";
 
 const Header = () => {
   const { currentUser } = useSelector((state) => state.persistedReducer.user);
-  console.log(currentUser, "currentUser");
   return (
     <div className="bg-blue-500 p-4">
       <div className="container mx-auto flex justify-between items-center">
@@ -23,6 +22,7 @@ const Header = () => {
           <NavLink to="/profile" className="text-white hover:text-gray-300">
             Profile
           </NavLink>
+
           {currentUser ? (
             <img
               className="w-8 h-8 rounded-full object-cover"
