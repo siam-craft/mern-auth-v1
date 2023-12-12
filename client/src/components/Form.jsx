@@ -7,6 +7,7 @@ import {
   loginSuccess,
   loginFailure,
 } from "../redux/user/userSlice.js";
+import OAuth from "./OAuth.jsx";
 
 const Form = ({ type }) => {
   const dispatch = useDispatch();
@@ -238,12 +239,7 @@ const Form = ({ type }) => {
       </div>
 
       <div className="flex items-center justify-between mt-4">
-        <button
-          type="button"
-          className="w-full bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
-        >
-          Sign Up with Google
-        </button>
+        <OAuth />
       </div>
       <div className="mt-4">
         <p className="text-center text-sm text-gray-600">
